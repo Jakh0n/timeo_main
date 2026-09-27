@@ -1,0 +1,28 @@
+---
+description: "Core project context — what this product is and its scope boundary"
+globs:
+alwaysApply: true
+---
+
+# Project Context
+
+Multi-tenant SaaS for restaurant staff scheduling (Node.js + Express
+backend, Next.js frontend, PostgreSQL + Prisma, HiGHS for scheduling —
+no Python anywhere in this repo).
+
+Core workflow: Manager creates a Shift Requirement (per branch,
+weekday/weekend day/night staffing counts) → gets a shareable public
+link → workers open it with NO account, submit name + employeeId +
+availability → manager generates a schedule (HiGHS MIP solver) →
+reviews/confirms → workers revisit the SAME link to check their
+assigned shifts.
+
+Current scope: single-tenant MVP behavior is fine functionally, but
+the Organization/multi-tenant data model must always be respected —
+every query filters by the current organizationId.
+
+Full spec: see FINAL-BUILD-PLAN.md at the repo root. Read it before
+starting any task that isn't covered by an already-completed prompt.
+
+Do not introduce Python, a separate scheduler microservice, or
+worker-account/auth concepts — these were deliberately removed.

@@ -1,0 +1,26 @@
+---
+description: "Non-negotiable scheduling domain rules for the HiGHS-based scheduler"
+globs: "backend/src/scheduler/**/*.ts"
+alwaysApply: false
+---
+
+# Scheduling Domain Rules
+
+- Every shift is exactly 12 hours: DAY starts 09:00, NIGHT starts
+  21:00, unless a ShiftRequirement specifies otherwise.
+- Availability windows can cross midnight: if endHour <= startHour,
+  the window extends into the next day. Always handle via absolute
+  week-hour math (day_index*24 + hour), not string/label comparison.
+- No more than `maxSeniorPerShift` (default 1) senior-level workers on
+  a single shift — hard constraint, always enforced as both a `>=`
+  minimum and `<=` maximum in the LP model, never just a preference.
+- Fairness (even distribution across workers) is a soft objective
+  (minimize max-min shift count) — never block a generation just to
+  make it perfectly even.
+- If the full-coverage model is infeasible, relax coverage to a
+  best-effort objective and return a partial result with unfilled
+  slots clearly labeled — never return nothing or fail silently.
+- This is a Mixed Integer Program solved with HiGHS (npm: "highs"),
+  not a CP-SAT or ML model. See scheduler.js at the repo root for the
+  reference LP-formulation this module was built from — keep new
+  constraints in the same style (linear sums of binary variables).

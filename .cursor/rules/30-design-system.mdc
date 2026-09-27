@@ -1,0 +1,25 @@
+---
+description: "Calendly + Apple inspired design system rules for all UI"
+globs: "frontend/app/**/*.tsx,frontend/components/**/*.tsx"
+alwaysApply: false
+---
+
+# Design System
+
+- One neutral base color + one accent color, used consistently for
+  every primary action and active state. Status colors (red/green)
+  only for real state (unfilled shift / confirmed) — never decorative.
+- One sans-serif type family, small consistent type scale, generous
+  whitespace. This is a daily-use operational tool, not a marketing
+  site — restraint over decoration.
+- Manager screens: sidebar dashboard (shadcn Sidebar component), one
+  clear primary action per screen, dense-but-clear tables/grids.
+- Worker-facing public page (/app/s/[linkToken]): centered single
+  column, max-width ~480px, no sidebar, no app chrome, mobile-first.
+  Progressive disclosure — don't show time pickers for a day until
+  the worker toggles it available.
+- Never: gradients, ALL-CAPS eyebrow labels, emoji-as-icons, identical
+  heavy-shadow cards stacked everywhere, decorative animation.
+- An under-filled/problem state must be the single most visually
+  obvious element on any screen it appears on. A fully-correct state
+  should look calm, not celebratory.

@@ -1,0 +1,32 @@
+---
+description: "Express backend conventions: Prisma, auth, multi-tenant isolation, public endpoints"
+globs: "backend/**/*.ts"
+alwaysApply: false
+---
+
+# Backend Conventions
+
+- Every query touching organization-scoped data (Branch,
+  ShiftRequirement, and anything joined from them) MUST filter by the
+  current user's organizationId, read from the JWT — never trust an
+  organizationId passed in a request body or query string.
+- Auth is JWT in an httpOnly cookie, issued only by
+  /backend/src/routes/auth.ts. Both email/password and Google OAuth
+  (Passport.js) must issue the cookie through the same helper function
+  — never duplicate JWT-signing logic.
+- Cookie settings branch on NODE_ENV: `SameSite=None; Secure` in
+  production (frontend and backend are on different domains), `Lax`
+  in local dev. CORS must have `credentials: true` and an explicit
+  origin (never `*`) whenever cookies are involved.
+- Routes under /api/public/* (the worker-facing availability
+  submission and schedule-lookup endpoints) are intentionally
+  unauthenticated. They must: (1) be rate-limited via
+  express-rate-limit, (2) never return data belonging to a different
+  ShiftRequirement than the one identified by linkToken, (3) never
+  leak other workers' submissions to the requester.
+- The scheduler module (/backend/src/scheduler/) has no database
+  access — it's a pure function taking plain data in, returning an
+  assignment result. Database reads/writes around it stay in the
+  route handler, not inside the scheduler module.
+- HiGHS is loaded once at server startup as a singleton — never
+  re-initialize the WASM module inside a request handler.

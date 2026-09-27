@@ -1,0 +1,25 @@
+---
+description: "Next.js frontend conventions: App Router, state management, API client usage"
+globs: "frontend/**/*.ts,frontend/**/*.tsx"
+alwaysApply: false
+---
+
+# Frontend Conventions
+
+- Next.js App Router only, TypeScript strict mode. Server Components
+  by default; add "use client" only when genuinely needed.
+- State split: **TanStack Query** for anything from the backend
+  (fetching, caching, mutations) — never fetch server data with
+  useEffect+useState. **Zustand** only for pure UI state (selected
+  branch, modal open/closed, sidebar collapsed). Never mix the two.
+- All backend calls go through the shared API client in
+  /frontend/lib/api.ts, which always sets `credentials: "include"` —
+  never call fetch() directly against NEXT_PUBLIC_API_URL elsewhere.
+- shadcn/ui as the component base. Check /frontend/components/ui/
+  before writing a new primitive from scratch.
+- No new npm dependencies without asking first — the stack is
+  intentionally minimal (Next.js, Tailwind, shadcn/ui, Zustand,
+  TanStack Query, lucide-react).
+- The public worker-facing pages (/app/s/[linkToken]/*) must never
+  import the manager Sidebar layout or assume an authenticated
+  session — they are a separate, unauthenticated surface.
